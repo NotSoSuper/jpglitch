@@ -3,7 +3,7 @@ import copy
 import random
 import click
 
-from itertools import tee, izip
+from itertools import tee
 from PIL import Image
 
 
@@ -14,7 +14,7 @@ def pairwise(iterable):
     """
     a, b = tee(iterable)
     next(b, None)
-    return izip(a, b)
+    return zip(a, b)
 
 
 class Jpeg(object):
