@@ -90,7 +90,7 @@ class GlitchedImage(object):
 
         self.new_bytes = new_bytes
 
-    def save_image(self, name):
+    def save_image(self, name, ext=None):
         """Save the image to a file. Keep trying by re-glitching the image with
         less iterations if it fails
         """
@@ -99,7 +99,7 @@ class GlitchedImage(object):
             try:
                 stream = BytesIO(self.new_bytes)
                 im = Image.open(stream)
-                im.save(name)
+                im.save(name, ext)
                 return
             except IOError:
                 if self.parameters['iterations'] == 1:
