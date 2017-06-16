@@ -62,7 +62,7 @@ class GlitchedImage(object):
         # bytes around if we glitch it so much we break the file.
         new_bytes = self.bytes.copy()
 
-        for i in (xrange(iterations)):
+        for i in range(iterations):
             max_index = len(self.bytes) - self.header_length - 4
 
             # The following operations determine where we'll overwrite a value
