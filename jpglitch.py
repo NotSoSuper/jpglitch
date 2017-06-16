@@ -1,8 +1,7 @@
-import io
-import copy
-import random
 import click
 
+from io import BytesIO
+from random import randint
 from itertools import tee
 from PIL import Image
 
@@ -17,7 +16,7 @@ def pairwise(iterable):
     return zip(a, b)
 
 
-class Jpeg(object):
+class GlitchedImage(object):
 
     def __init__(self, image_bytes, amount, seed, iterations):
         self.bytes = image_bytes
@@ -61,7 +60,7 @@ class Jpeg(object):
 
         # work with a copy of the original bytes. We might need the original
         # bytes around if we glitch it so much we break the file.
-        new_bytes = copy.copy(self.bytes)
+        new_bytes = self.bytes.copy()
 
         for i in (xrange(iterations)):
             max_index = len(self.bytes) - self.header_length - 4
@@ -98,7 +97,7 @@ class Jpeg(object):
 
         while True:
             try:
-                stream = io.BytesIO(self.new_bytes)
+                stream = BytesIO(self.new_bytes)
                 im = Image.open(stream)
                 im.save(name)
                 return
@@ -113,12 +112,12 @@ class Jpeg(object):
 
 @click.command()
 @click.option('--amount', '-a', type=click.IntRange(0, 99, clamp=True),
-              default=random.randint(0, 99), help="Insert high or low values?")
+              default=randint(0, 99), help="Insert high or low values?")
 @click.option('--seed', '-s', type=click.IntRange(0, 99, clamp=True),
-              default=random.randint(0, 99), help="Begin glitching at the\
+              default=randint(0, 99), help="Begin glitching at the\
                       start on a bit later on.")
 @click.option('--iterations', '-i', type=click.IntRange(0, 115, clamp=True),
-              default=random.randint(0, 115), help="How many values should\
+              default=randint(0, 115), help="How many values should\
                       get replaced.")
 @click.option('--jpg', is_flag=True, help="Output to jpg instead of png.\
                       Note that png is more stable")
