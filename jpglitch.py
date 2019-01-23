@@ -1,5 +1,3 @@
-import click
-
 from io import BytesIO
 from random import randint
 from itertools import tee
@@ -21,10 +19,7 @@ class GlitchedImage(object):
     def __init__(self, image_bytes, amount, seed, iterations):
         self.bytes = image_bytes
         self.new_bytes = None
-        try:
-            self.header_length = self.get_header_length()
-        except ValueError as e:
-            raise click.BadParameter(message=e.message)
+        self.header_length = self.get_header_length()
 
         self.parameters = {
             'amount': amount,
@@ -103,45 +98,8 @@ class GlitchedImage(object):
                 return
             except IOError:
                 if self.parameters['iterations'] == 1:
-                    raise click.BadParameter(message='This image is beyond\
-                            repair, maybe try again?', param_hint=['image'])
+                    raise Exception('This image is beyond \
+                            repair, maybe try again?')
 
                 self.parameters['iterations'] -= 1
                 self.glitch_bytes()
-
-
-@click.command()
-@click.option('--amount', '-a', type=click.IntRange(0, 99, clamp=True),
-              default=randint(0, 99), help="Insert high or low values?")
-@click.option('--seed', '-s', type=click.IntRange(0, 99, clamp=True),
-              default=randint(0, 99), help="Begin glitching at the\
-                      start on a bit later on.")
-@click.option('--iterations', '-i', type=click.IntRange(0, 115, clamp=True),
-              default=randint(0, 115), help="How many values should\
-                      get replaced.")
-@click.option('--jpg', is_flag=True, help="Output to jpg instead of png.\
-                      Note that png is more stable")
-@click.option('--output', '-o', help="What to call your glitched file.")
-@click.argument('image', type=click.File('rb'))
-def cli(image, amount, seed, iterations, jpg, output):
-    image_bytes = bytearray(image.read())
-    jpeg = Jpeg(image_bytes, amount, seed, iterations)
-
-    click.echo("\nScrambling your image with the following parameters:")
-    for key, value in jpeg.parameters.iteritems():
-        click.echo(message=key + ': ' + str(value))
-
-    if output:
-        # TODO
-        # make the extension here count as guide for what to save the file as
-        # for now just ignore it if it's given
-        name = output.rsplit('.')[0]
-    else:
-        name = image.name.rsplit('.')[0] + "_glitched"
-
-    name += '%s' % ('.jpg' if jpg else '.png')
-
-    jpeg.save_image(name)
-
-    output = "\nSucces! Checkout %s." % name
-    click.echo(output)

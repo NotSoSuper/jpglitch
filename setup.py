@@ -6,11 +6,6 @@ setup(
     version='0.2',
     py_modules=['jpglitch'],
     install_requires=[
-        'Click',
-        'Pillow',
+        'Pillow'
     ],
-    entry_points='''
-        [console_scripts]
-        jpglitch=jpglitch:cli
-    ''',
 )
